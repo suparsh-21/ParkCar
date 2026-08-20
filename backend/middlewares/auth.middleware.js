@@ -1,8 +1,8 @@
 const jwt=require("jsonwebtoken")
 
-async function authMiddleware(req,res){
+async function authMiddleware(req,res,next){
 try{
-const token=req.cookie.token
+const token=req.cookies.token
 if(!token){
     return res.status(401).json({message:"Authentication Failed"})
 }
@@ -12,7 +12,7 @@ next()
 }
 
 catch(error){
-    console.error("Authentication Failed",error.message)
+    console.error("Authentication Failed",error.name,error.message)
     return res.status(401).json({message:"Invalid/Expired tokens !"})
 }
 }

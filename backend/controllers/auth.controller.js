@@ -86,6 +86,18 @@ async function loginController(req, res) {
     }
 }
 
+async function logoutController(req,res){
+try{
+    res.clearCookie("token",{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"strict"})
+    return res.status(200).json({message:"Logout Successfull"})
+}
+catch(error){
+    console.error("Logout Error",error.message)
+    return res.json(500).json({message:"Internal Server Error !"})
+
+}
+
+}
 
 
 
@@ -94,5 +106,4 @@ async function loginController(req, res) {
 
 
 
-
-module.exports={registerController,loginController}
+module.exports={registerController,loginController,logoutController}
