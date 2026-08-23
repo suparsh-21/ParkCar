@@ -100,10 +100,4 @@ catch(error){
 }
 
 
-
-
-
-
-
-
 module.exports={registerController,loginController,logoutController}
