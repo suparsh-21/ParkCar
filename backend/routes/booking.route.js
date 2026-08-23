@@ -1,7 +1,7 @@
 const express = require("express");
 
 const {
-    createBookingController
+    createBookingController,getMyBookingsController
 } = require("../controllers/booking.controller");
 
 const authMiddleware = require("../middlewares/auth.middleware");
@@ -13,5 +13,7 @@ router.post(
     authMiddleware,
     createBookingController
 );
+
+router.post("/my",authMiddleware,getMyBookingsController)
 
 module.exports = router;

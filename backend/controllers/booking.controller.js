@@ -49,4 +49,35 @@ catch(error){
 }
 }
 
-module.exports={createBookingController}
+
+async function getMyBookingsController(req,res){
+     try{
+       const result = await pool.query(
+            `SELECT
+                b.id,
+                b.parking_lot_id,
+                p.name AS parking_name,
+                p.address,
+                b.start_time,
+                b.end_time,
+                b.amount,
+                b.status,
+                b.created_at
+             FROM bookings b
+             JOIN parking_lots p
+             ON b.parking_lot_id = p.id
+             WHERE b.user_id = $1
+             ORDER BY b.created_at DESC`,
+            [req.user.id]
+        );
+    return res.status(200).json({message:"Bookings fetched successfully !",bookings:result.rows})
+}
+
+catch(error){
+    console.error("Get Bookings Error !",error.message)
+    return res.status(500).json({message:"Internal Server Error !"})
+
+}
+}
+
+module.exports={createBookingController,getMyBookingsController}
