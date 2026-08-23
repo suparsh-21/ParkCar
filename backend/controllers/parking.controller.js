@@ -65,5 +65,29 @@ catch(error){
 
 }
 
+async function getMyParkingsController(req, res) {
+    try {
+        const result = await pool.query(
+            `SELECT *
+             FROM parking_lots
+             WHERE owner_id = $1
+             ORDER BY created_at DESC`,
+            [req.user.id]
+        );
 
-module.exports={createParkingController,getNearbyParkingController}
+        return res.status(200).json({
+            message: "Your parking lots fetched successfully",
+            parking: result.rows
+        });
+
+    } catch (error) {
+        console.error("Get My Parking Error!", error.message);
+
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+}
+
+
+module.exports={createParkingController,getNearbyParkingController,getMyParkingsController}
