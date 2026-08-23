@@ -12,6 +12,7 @@ async function createPaymentController(req, res) {
             })
         }
 
+        // Get booking
         const bookingResult = await pool.query(
             `SELECT * FROM bookings WHERE id = $1`,
             [booking_id]
@@ -25,6 +26,7 @@ async function createPaymentController(req, res) {
 
         const booking = bookingResult.rows[0]
 
+
         // Check booking owner
         if (Number(booking.user_id) !== Number(req.user.id)) {
             return res.status(403).json({
@@ -32,12 +34,14 @@ async function createPaymentController(req, res) {
             })
         }
 
+
         // Check booking status
         if (booking.status !== "PENDING") {
             return res.status(400).json({
                 message: "This booking cannot be paid for"
             })
         }
+
 
         // Check payment deadline
         if (
@@ -57,6 +61,24 @@ async function createPaymentController(req, res) {
             })
         }
 
+
+        // Check if payment already exists
+        const existingPayment = await pool.query(
+            `SELECT *
+             FROM payments
+             WHERE booking_id = $1`,
+            [booking_id]
+        )
+
+        if (existingPayment.rows.length > 0) {
+            return res.status(400).json({
+                message: "Payment already exists for this booking",
+                payment: existingPayment.rows[0]
+            })
+        }
+
+
+        // Create payment
         const result = await pool.query(
             `INSERT INTO payments
             (booking_id, amount, payment_method)
@@ -68,6 +90,7 @@ async function createPaymentController(req, res) {
                 payment_method
             ]
         )
+
 
         return res.status(201).json({
             message: "Payment initiated Successfully !",
@@ -99,11 +122,13 @@ async function paymentSuccessController(req, res) {
             transaction_id
         } = req.body
 
+
         if (!payment_id || !transaction_id) {
             return res.status(400).json({
                 message: "Payment ID and transaction ID are required"
             })
         }
+
 
         await client.query("BEGIN")
 
@@ -117,6 +142,7 @@ async function paymentSuccessController(req, res) {
             [payment_id]
         )
 
+
         if (paymentResult.rows.length === 0) {
 
             await client.query("ROLLBACK")
@@ -126,10 +152,22 @@ async function paymentSuccessController(req, res) {
             })
         }
 
+
         const payment = paymentResult.rows[0]
 
 
-        // 2. Get booking
+        // 2. Check payment status
+        if (payment.status !== "PENDING") {
+
+            await client.query("ROLLBACK")
+
+            return res.status(400).json({
+                message: "This payment has already been processed"
+            })
+        }
+
+
+        // 3. Get booking
         const bookingResult = await client.query(
             `SELECT *
              FROM bookings
@@ -137,6 +175,7 @@ async function paymentSuccessController(req, res) {
              FOR UPDATE`,
             [payment.booking_id]
         )
+
 
         if (bookingResult.rows.length === 0) {
 
@@ -147,10 +186,11 @@ async function paymentSuccessController(req, res) {
             })
         }
 
+
         const booking = bookingResult.rows[0]
 
 
-        // 3. Check ownership
+        // 4. Check ownership
         if (
             Number(booking.user_id) !==
             Number(req.user.id)
@@ -164,7 +204,7 @@ async function paymentSuccessController(req, res) {
         }
 
 
-        // 4. Check booking status
+        // 5. Check booking status
         if (booking.status !== "PENDING") {
 
             await client.query("ROLLBACK")
@@ -175,7 +215,7 @@ async function paymentSuccessController(req, res) {
         }
 
 
-        // 5. Check payment deadline
+        // 6. Check payment deadline
         if (
             booking.payment_deadline &&
             new Date(booking.payment_deadline) < new Date()
@@ -196,7 +236,7 @@ async function paymentSuccessController(req, res) {
         }
 
 
-        // 6. Reserve one parking slot safely
+        // 7. Reserve one parking slot safely
         const slotResult = await client.query(
             `UPDATE parking_lots
              SET available_slots = available_slots - 1
@@ -205,6 +245,7 @@ async function paymentSuccessController(req, res) {
              RETURNING *`,
             [booking.parking_lot_id]
         )
+
 
         if (slotResult.rows.length === 0) {
 
@@ -216,7 +257,7 @@ async function paymentSuccessController(req, res) {
         }
 
 
-        // 7. Update payment
+        // 8. Update payment
         const updatedPayment = await client.query(
             `UPDATE payments
              SET status = 'SUCCESS',
@@ -230,7 +271,7 @@ async function paymentSuccessController(req, res) {
         )
 
 
-        // 8. Confirm booking
+        // 9. Confirm booking
         const updatedBooking = await client.query(
             `UPDATE bookings
              SET status = 'CONFIRMED'
@@ -240,11 +281,12 @@ async function paymentSuccessController(req, res) {
         )
 
 
-        // 9. Everything succeeded
+        // 10. Everything succeeded
         await client.query("COMMIT")
 
 
         return res.status(200).json({
+
             message: "Payment successful and booking confirmed",
 
             payment: updatedPayment.rows[0],
@@ -253,6 +295,7 @@ async function paymentSuccessController(req, res) {
 
             parking: slotResult.rows[0]
         })
+
 
     } catch (error) {
 
