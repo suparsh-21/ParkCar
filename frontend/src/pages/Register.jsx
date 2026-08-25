@@ -64,10 +64,11 @@ export default function Register() {
     }}>
       <div style={{
         position: "absolute",
-        width: "350px",
-        height: "350px",
-        background: "radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)",
+        width: "450px",
+        height: "450px",
+        background: "radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, rgba(6, 182, 212, 0.15) 45%, rgba(236, 72, 153, 0.1) 75%, transparent 90%)",
         borderRadius: "50%",
+        filter: "blur(40px)",
         pointerEvents: "none"
       }} />
 

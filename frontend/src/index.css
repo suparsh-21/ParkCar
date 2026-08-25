@@ -89,7 +89,7 @@ html {
 
 body {
   min-height: 100vh;
-  background-color: var(--bg-main);
+  background-color: #070a13;
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
@@ -97,8 +97,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(37, 99, 235, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(6, 182, 212, 0.06), transparent);
+    radial-gradient(ellipse 70% 45% at 50% -10%, rgba(139, 92, 246, 0.18), transparent 70%),
+    radial-gradient(circle 500px at 85% 20%, rgba(6, 182, 212, 0.13), transparent 60%),
+    radial-gradient(circle 450px at 10% 45%, rgba(236, 72, 153, 0.10), transparent 60%),
+    radial-gradient(circle 400px at 80% 80%, rgba(16, 185, 129, 0.08), transparent 50%),
+    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: auto, auto, auto, auto, 28px 28px;
   background-attachment: fixed;
 }
 
@@ -440,8 +444,49 @@ a {
 }
 
 @keyframes pulseSubtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes floatCarLeft {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-12px) rotate(3.5deg); }
+}
+
+@keyframes floatCarRight {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(-3.5deg); }
+}
+
+@keyframes floatBadge1 {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-8px) scale(1.03); }
+}
+
+@keyframes floatBadge2 {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .animate-spin {
@@ -450,6 +495,93 @@ a {
 
 .animate-pulse {
   animation: pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-car-left {
+  animation: floatCarLeft 6s ease-in-out infinite;
+}
+
+.animate-car-right {
+  animation: floatCarRight 6.5s ease-in-out infinite;
+}
+
+.animate-badge-1 {
+  animation: floatBadge1 4s ease-in-out infinite;
+}
+
+.animate-badge-2 {
+  animation: floatBadge2 4.8s ease-in-out 1s infinite;
+}
+
+.gradient-text-animated {
+  background: linear-gradient(135deg, #c084fc, #a855f7, #38bdf8, #ec4899);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 6s ease infinite;
+}
+
+/* Card Glow Hover */
+.card-glow-hover {
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.card-glow-hover::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 60%, rgba(59, 130, 246, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity var(--transition-normal);
+}
+
+.card-glow-hover:hover::before {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.6), rgba(59, 130, 246, 0.6), rgba(6, 182, 212, 0.6));
+}
+
+.card-glow-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6), 0 0 25px rgba(59, 130, 246, 0.2);
+}
+
+/* Button Shimmer */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-150%);
+  transition: none;
+}
+
+.btn-shimmer:hover::after {
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+/* Background Subtle Grid Texture */
+.bg-grid-mesh {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 /* Scrollbar Customization */
@@ -483,4 +615,5 @@ a {
     padding: 1.25rem;
   }
 }
+
 

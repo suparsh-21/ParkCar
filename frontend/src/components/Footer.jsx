@@ -1,6 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { Car, ShieldCheck, Zap, Compass, Mail, MapPin } from "lucide-react"
+import Logo from "./Logo"
+import { ShieldCheck, Zap, Compass, Mail, MapPin } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -19,27 +20,8 @@ export default function Footer() {
         }}>
           {/* Brand Col */}
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1rem" }}>
-              <div style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "var(--radius-md)",
-                background: "linear-gradient(135deg, var(--primary-600), var(--accent-cyan))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#ffffff"
-              }}>
-                <Car size={18} />
-              </div>
-              <span style={{
-                fontFamily: "var(--font-heading)",
-                fontWeight: 800,
-                fontSize: "1.2rem",
-                color: "#ffffff"
-              }}>
-                ParkKar
-              </span>
+            <div style={{ marginBottom: "1rem" }}>
+              <Logo to="/" />
             </div>
             <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1.25rem", lineHeight: 1.6 }}>
               Smart parking simplified. Real-time availability, instant slot reservations, seamless payments, and turn-by-turn navigation.

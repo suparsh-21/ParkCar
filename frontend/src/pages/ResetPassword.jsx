@@ -92,13 +92,14 @@ export default function ResetPassword() {
       padding: "2rem 1rem",
       position: "relative"
     }}>
-      {/* Background subtle glow */}
+      {/* Background multi-chromatic glow */}
       <div style={{
         position: "absolute",
-        width: "350px",
-        height: "350px",
-        background: "radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%)",
+        width: "420px",
+        height: "420px",
+        background: "radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, rgba(6, 182, 212, 0.15) 45%, rgba(236, 72, 153, 0.1) 75%, transparent 90%)",
         borderRadius: "50%",
+        filter: "blur(40px)",
         pointerEvents: "none"
       }} />
 

@@ -23,7 +23,8 @@ import {
   Lock,
   Layers,
   Star,
-  Users
+  Users,
+  Radio
 } from "lucide-react"
 
 export default function Landing() {
@@ -68,23 +69,23 @@ export default function Landing() {
       <section style={{
         position: "relative",
         overflow: "hidden",
-        padding: "3rem 1rem 0",
-        minHeight: "780px",
+        padding: "3.5rem 1rem 0",
+        minHeight: "820px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-between"
       }}>
-        {/* Soft Ambient Glow in Center */}
+        {/* Soft Animated Ambient Glow in Center */}
         <div style={{
           position: "absolute",
-          top: "15%",
+          top: "10%",
           left: "50%",
           transform: "translate(-50%, 0)",
-          width: "650px",
-          height: "450px",
-          background: "radial-gradient(circle, rgba(168, 85, 247, 0.28) 0%, rgba(59, 130, 246, 0.2) 40%, transparent 70%)",
-          filter: "blur(60px)",
+          width: "750px",
+          height: "500px",
+          background: "radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(59, 130, 246, 0.2) 40%, rgba(6, 182, 212, 0.1) 60%, transparent 75%)",
+          filter: "blur(70px)",
           pointerEvents: "none",
           zIndex: 0
         }} />
@@ -97,25 +98,26 @@ export default function Landing() {
           maxWidth: "920px",
           margin: "0 auto"
         }}>
-          {/* Pill Badge */}
+          {/* Animated Pill Badge */}
           <div style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "0.5rem",
-            padding: "0.4rem 1.1rem",
+            padding: "0.45rem 1.25rem",
             background: "rgba(168, 85, 247, 0.12)",
             border: "1px solid rgba(168, 85, 247, 0.35)",
             borderRadius: "var(--radius-full)",
             color: "#c084fc",
             fontSize: "0.85rem",
             fontWeight: 600,
-            marginBottom: "1.5rem"
+            marginBottom: "1.75rem",
+            boxShadow: "0 0 20px rgba(168, 85, 247, 0.2)"
           }}>
-            <Sparkles size={15} />
-            <span>ParkKar · Smart Parking Mobility</span>
+            <Sparkles size={15} className="animate-spin" style={{ animationDuration: "8s" }} />
+            <span>ParkKar · Smart Parking Mobility Platform</span>
           </div>
 
-          {/* Exact Headline Structure from Inspiration */}
+          {/* Animated Gradient Headline */}
           <h1 style={{
             fontSize: "clamp(2.6rem, 6.5vw, 4.8rem)",
             fontWeight: 900,
@@ -125,12 +127,7 @@ export default function Landing() {
             color: "#ffffff"
           }}>
             Smart parking booking <br />
-            <span style={{
-              background: "linear-gradient(135deg, #c084fc 0%, #a855f7 40%, #ec4899 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              display: "inline-block"
-            }}>
+            <span className="gradient-text-animated">
               between drivers & owners
             </span>
           </h1>
@@ -141,29 +138,29 @@ export default function Landing() {
             color: "var(--text-secondary)",
             lineHeight: 1.65,
             maxWidth: "680px",
-            margin: "0 auto 2.25rem"
+            margin: "0 auto 2.5rem"
           }}>
             With ParkKar, save time and avoid parking stress by reserving your spot in advance. Discover a seamless, real-time solution for city parking.
           </p>
 
-          {/* CTA Buttons (NO App store badges) */}
+          {/* CTA Buttons with Shimmer Effects */}
           <div style={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap: "1rem",
+            gap: "1.25rem",
             flexWrap: "wrap",
             marginBottom: "2rem"
           }}>
             <Link 
               to={user ? (isOwner ? "/owner" : "/find-parking") : "/find-parking"} 
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary btn-lg btn-shimmer"
               style={{
                 padding: "0.95rem 2.25rem",
                 fontSize: "1.05rem",
                 borderRadius: "var(--radius-full)",
                 gap: "0.6rem",
-                boxShadow: "0 0 25px rgba(37, 99, 235, 0.45)"
+                boxShadow: "0 0 30px rgba(37, 99, 235, 0.45)"
               }}
             >
               <MapPin size={19} />
@@ -188,29 +185,72 @@ export default function Landing() {
         </div>
 
         {/* =========================================================================
-            VISUAL STAGE: Left Car + Center Smartphone App Mockup + Right Car
+            VISUAL STAGE: Left Car (Animated Float) + Center Smartphone App Mockup + Right Car (Animated Float)
            ========================================================================= */}
         <div style={{
           position: "relative",
           width: "100%",
           maxWidth: "1380px",
-          margin: "1.5rem auto 0",
+          margin: "2rem auto 0",
           display: "flex",
           alignItems: "flex-end",
           justifyContent: "center",
-          minHeight: "420px",
+          minHeight: "440px",
           zIndex: 1
         }}>
-          {/* Left Angled Car */}
-          <div style={{
+          {/* Floating Feature Pill Badge Left */}
+          <div className="animate-badge-1" style={{
             position: "absolute",
-            left: "-40px",
+            left: "clamp(10px, 15vw, 120px)",
+            top: "20px",
+            zIndex: 4,
+            background: "rgba(15, 23, 42, 0.85)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(59, 130, 246, 0.4)",
+            padding: "0.6rem 1.1rem",
+            borderRadius: "var(--radius-full)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
+          }}>
+            <div className="status-dot online animate-pulse" />
+            <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#ffffff" }}>
+              ⚡ 10-Min Hold Protection
+            </span>
+          </div>
+
+          {/* Floating Feature Pill Badge Right */}
+          <div className="animate-badge-2" style={{
+            position: "absolute",
+            right: "clamp(10px, 15vw, 120px)",
+            top: "40px",
+            zIndex: 4,
+            background: "rgba(15, 23, 42, 0.85)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(168, 85, 247, 0.4)",
+            padding: "0.6rem 1.1rem",
+            borderRadius: "var(--radius-full)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
+          }}>
+            <Compass size={15} color="#c084fc" />
+            <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#ffffff" }}>
+              📍 1-Click Google Maps
+            </span>
+          </div>
+
+          {/* Left Angled Car with Smooth Float Animation */}
+          <div className="animate-car-left" style={{
+            position: "absolute",
+            left: "-30px",
             bottom: "0",
-            width: "clamp(240px, 34vw, 440px)",
+            width: "clamp(240px, 34vw, 450px)",
             zIndex: 1,
             pointerEvents: "none",
-            filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.7))",
-            transform: "rotate(3deg)"
+            filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.75))"
           }}>
             <img 
               src="/car-left.jpg" 
@@ -225,8 +265,8 @@ export default function Landing() {
             />
           </div>
 
-          {/* Center Smartphone App Showcase Mockup (Rising from bottom) */}
-          <div style={{
+          {/* Center Smartphone App Showcase Mockup (Rising from bottom with Float Effect) */}
+          <div className="animate-float" style={{
             position: "relative",
             zIndex: 3,
             width: "clamp(290px, 28vw, 360px)",
@@ -367,16 +407,15 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Right Angled Car */}
-          <div style={{
+          {/* Right Angled Car with Smooth Float Animation */}
+          <div className="animate-car-right" style={{
             position: "absolute",
-            right: "-40px",
+            right: "-30px",
             bottom: "0",
-            width: "clamp(240px, 34vw, 440px)",
+            width: "clamp(240px, 34vw, 450px)",
             zIndex: 1,
             pointerEvents: "none",
-            filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.7))",
-            transform: "rotate(-3deg)"
+            filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.75))"
           }}>
             <img 
               src="/car-right.jpg" 
@@ -402,25 +441,25 @@ export default function Landing() {
           gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: "1.25rem"
         }}>
-          <div className="card-glass" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
+          <div className="card-glass card-glow-hover" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
             <div style={{ fontSize: "2.4rem", fontWeight: 800, color: "#38bdf8", marginBottom: "0.25rem" }}>100%</div>
             <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.95rem" }}>Guaranteed Spot Hold</div>
             <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>10-min reservation hold</div>
           </div>
 
-          <div className="card-glass" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
+          <div className="card-glass card-glow-hover" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
             <div style={{ fontSize: "2.4rem", fontWeight: 800, color: "#34d399", marginBottom: "0.25rem" }}>&lt; 60s</div>
             <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.95rem" }}>Instant Confirmation</div>
             <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>Razorpay UPI / Cards</div>
           </div>
 
-          <div className="card-glass" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
+          <div className="card-glass card-glow-hover" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
             <div style={{ fontSize: "2.4rem", fontWeight: 800, color: "#c084fc", marginBottom: "0.25rem" }}>1-Click</div>
             <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.95rem" }}>Turn-by-Turn Navigation</div>
             <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>Direct Google Maps route</div>
           </div>
 
-          <div className="card-glass" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
+          <div className="card-glass card-glow-hover" style={{ padding: "1.75rem", textAlign: "center", borderRadius: "var(--radius-xl)" }}>
             <div style={{ fontSize: "2.4rem", fontWeight: 800, color: "#f59e0b", marginBottom: "0.25rem" }}>Real-time</div>
             <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.95rem" }}>Owner Bay Controls</div>
             <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>Live Open/Close toggles</div>
@@ -453,7 +492,7 @@ export default function Landing() {
             gap: "1.5rem"
           }}>
             {/* Step 1 */}
-            <div className="card card-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
+            <div className="card card-hover card-glow-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
               <div style={{
                 width: "48px",
                 height: "48px",
@@ -477,7 +516,7 @@ export default function Landing() {
             </div>
 
             {/* Step 2 */}
-            <div className="card card-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
+            <div className="card card-hover card-glow-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
               <div style={{
                 width: "48px",
                 height: "48px",
@@ -501,7 +540,7 @@ export default function Landing() {
             </div>
 
             {/* Step 3 */}
-            <div className="card card-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
+            <div className="card card-hover card-glow-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
               <div style={{
                 width: "48px",
                 height: "48px",
@@ -525,7 +564,7 @@ export default function Landing() {
             </div>
 
             {/* Step 4 */}
-            <div className="card card-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
+            <div className="card card-hover card-glow-hover" style={{ background: "var(--bg-surface)", padding: "1.75rem", borderRadius: "var(--radius-xl)" }}>
               <div style={{
                 width: "48px",
                 height: "48px",
@@ -555,7 +594,7 @@ export default function Landing() {
           4. FOR PARKING OWNERS (Monetize Space)
          ========================================================================= */}
       <section className="container" style={{ marginBottom: "6rem" }}>
-        <div className="card-glass" style={{
+        <div className="card-glass card-glow-hover" style={{
           padding: "3.5rem 2.5rem",
           borderRadius: "var(--radius-2xl)",
           border: "1px solid var(--border-medium)",
@@ -591,7 +630,7 @@ export default function Landing() {
                 </div>
               </div>
 
-              <Link to="/register" className="btn btn-primary btn-lg" style={{ gap: "0.6rem" }}>
+              <Link to="/register" className="btn btn-primary btn-lg btn-shimmer" style={{ gap: "0.6rem" }}>
                 <Building2 size={18} />
                 <span>Start Listing Today</span>
                 <ArrowRight size={18} />
@@ -660,7 +699,7 @@ export default function Landing() {
             return (
               <div 
                 key={index}
-                className="card-glass"
+                className="card-glass card-glow-hover"
                 style={{
                   borderRadius: "var(--radius-lg)",
                   padding: "1.25rem 1.5rem",
@@ -699,7 +738,7 @@ export default function Landing() {
           6. CONTACT & SUPPORT BANNER (WITH USER-REQUESTED EMAIL)
          ========================================================================= */}
       <section className="container" style={{ textAlign: "center" }}>
-        <div style={{
+        <div className="card-glow-hover" style={{
           padding: "4rem 2rem",
           background: "radial-gradient(circle at center, rgba(168, 85, 247, 0.18) 0%, rgba(37, 99, 235, 0.15) 50%, rgba(15, 23, 42, 0.95) 100%)",
           borderRadius: "var(--radius-2xl)",
@@ -749,7 +788,7 @@ export default function Landing() {
           <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
             <a
               href="mailto:parkkar2026@gmail.com"
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary btn-lg btn-shimmer"
               style={{ gap: "0.5rem" }}
             >
               <Mail size={18} />
