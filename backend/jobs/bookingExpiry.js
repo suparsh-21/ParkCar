@@ -2,7 +2,9 @@ const pool = require("../config/db");
 
 async function expirePendingBookings() {
     try {
-        const result = await pool.query(
+
+        // Expire unpaid bookings
+        const expiredResult = await pool.query(
             `UPDATE bookings
              SET status = 'EXPIRED'
              WHERE status = 'PENDING'
@@ -10,17 +12,35 @@ async function expirePendingBookings() {
              RETURNING id`
         );
 
-        if (result.rows.length > 0) {
+        if (expiredResult.rows.length > 0) {
             console.log(
-                `${result.rows.length} pending booking(s) expired`
+                `${expiredResult.rows.length} pending booking(s) expired`
+            );
+        }
+
+
+        // Complete finished bookings
+        const completedResult = await pool.query(
+            `UPDATE bookings
+             SET status = 'COMPLETED'
+             WHERE status = 'CONFIRMED'
+             AND end_time <= CURRENT_TIMESTAMP
+             RETURNING id`
+        );
+
+        if (completedResult.rows.length > 0) {
+            console.log(
+                `${completedResult.rows.length} booking(s) completed`
             );
         }
 
     } catch (error) {
+
         console.error(
             "Booking Expiry Error!",
             error.message
         );
+
     }
 }
 
