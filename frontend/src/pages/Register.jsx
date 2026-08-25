@@ -45,7 +45,7 @@ export default function Register() {
       success(data.message || "Account created successfully! Please sign in.")
       navigate("/login")
     } catch (err) {
-      const msg = err.response?.data?.message || "Registration failed. Please check your details."
+      const msg = err.response?.data?.message || err.customMessage || err.message || "Registration failed. Please check your details."
       setErrorMessage(msg)
       toastError(msg)
     } finally {

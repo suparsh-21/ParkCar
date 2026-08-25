@@ -199,6 +199,22 @@ export default function FindParking() {
 
             {/* Sort & Location Actions */}
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const n = new Date()
+                  const s = new Date(n.getTime() + 2 * 60 * 1000)
+                  const e = new Date(s.getTime() + 2 * 60 * 60 * 1000)
+                  setStartTime(formatLocalISO(s))
+                  setEndTime(formatLocalISO(e))
+                }}
+                className="btn btn-sm btn-secondary"
+                title="Reset time window to current time"
+                style={{ fontSize: "0.75rem", padding: "0.55rem 0.75rem" }}
+              >
+                Now
+              </button>
+
               <select
                 className="form-select"
                 value={sortBy}

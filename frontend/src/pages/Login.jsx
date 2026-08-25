@@ -45,7 +45,7 @@ export default function Login() {
       const destination = location.state?.from?.pathname || (data.user.role === "OWNER" ? "/owner" : "/driver")
       navigate(destination, { replace: true })
     } catch (err) {
-      const msg = err.response?.data?.message || "Invalid email or password. Please try again."
+      const msg = err.response?.data?.message || err.customMessage || err.message || "Invalid email or password. Please try again."
       setErrorMessage(msg)
       toastError(msg)
     } finally {

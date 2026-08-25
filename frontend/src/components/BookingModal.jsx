@@ -19,9 +19,23 @@ export default function BookingModal({
     return localISOTime
   }
 
-  // Default start time: 10 minutes in future, End time: 2 hours later
-  const defaultStart = initialStartTime ? new Date(initialStartTime) : new Date(Date.now() + 10 * 60 * 1000)
-  const defaultEnd = initialEndTime ? new Date(initialEndTime) : new Date(defaultStart.getTime() + 2 * 60 * 60 * 1000)
+  // Calculate a fresh, valid start time (at least 2 mins ahead of now so backend never flags past-time)
+  const getFreshStartTime = () => {
+    const now = new Date()
+    if (initialStartTime) {
+      const parsedInitial = new Date(initialStartTime)
+      // If initialStartTime is in the past, use now + 2 mins
+      if (parsedInitial.getTime() > now.getTime() + 60 * 1000) {
+        return parsedInitial
+      }
+    }
+    return new Date(now.getTime() + 2 * 60 * 1000)
+  }
+
+  const defaultStart = getFreshStartTime()
+  const defaultEnd = initialEndTime && new Date(initialEndTime) > defaultStart
+    ? new Date(initialEndTime)
+    : new Date(defaultStart.getTime() + 2 * 60 * 60 * 1000)
 
   const [startTime, setStartTime] = useState(formatLocalISO(defaultStart))
   const [endTime, setEndTime] = useState(formatLocalISO(defaultEnd))
@@ -29,6 +43,23 @@ export default function BookingModal({
   const [errorMsg, setErrorMsg] = useState("")
 
   if (!parking) return null
+
+  // Quick preset helper to set duration from start
+  const setDurationHours = (hours) => {
+    const s = new Date(startTime)
+    const baseStart = isNaN(s.getTime()) || s < new Date() ? new Date(Date.now() + 2 * 60 * 1000) : s
+    setStartTime(formatLocalISO(baseStart))
+    const newEnd = new Date(baseStart.getTime() + hours * 60 * 60 * 1000)
+    setEndTime(formatLocalISO(newEnd))
+  }
+
+  // Set Start Time to Right Now
+  const setTimeToNow = () => {
+    const nowPlusTwoMins = new Date(Date.now() + 2 * 60 * 1000)
+    const endPlusTwoHours = new Date(nowPlusTwoMins.getTime() + 2 * 60 * 60 * 1000)
+    setStartTime(formatLocalISO(nowPlusTwoMins))
+    setEndTime(formatLocalISO(endPlusTwoHours))
+  }
 
   // Calculate duration & price
   const start = new Date(startTime)
@@ -50,9 +81,11 @@ export default function BookingModal({
       return
     }
 
-    if (start < new Date()) {
-      setErrorMsg("Start time cannot be in the past")
-      return
+    // Backend requires start >= new Date(). Ensure start is at least current time with small buffer
+    let validStart = start
+    const now = new Date()
+    if (validStart.getTime() <= now.getTime()) {
+      validStart = new Date(now.getTime() + 60 * 1000) // 1 minute in future
     }
 
     setLoading(true)
@@ -60,7 +93,7 @@ export default function BookingModal({
     try {
       const payload = {
         parking_lot_id: parking.id,
-        start_time: start.toISOString(),
+        start_time: validStart.toISOString(),
         end_time: end.toISOString()
       }
 
@@ -127,12 +160,72 @@ export default function BookingModal({
           </div>
         )}
 
+        {/* Quick presets */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "1.25rem",
+          background: "var(--bg-surface-elevated)",
+          padding: "0.6rem 0.85rem",
+          borderRadius: "var(--radius-md)"
+        }}>
+          <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Quick Presets:</span>
+          <div style={{ display: "flex", gap: "0.4rem" }}>
+            <button
+              type="button"
+              onClick={setTimeToNow}
+              className="btn btn-sm btn-outline"
+              style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}
+            >
+              Start Now
+            </button>
+            <button
+              type="button"
+              onClick={() => setDurationHours(1)}
+              className="btn btn-sm btn-secondary"
+              style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}
+            >
+              1 hr
+            </button>
+            <button
+              type="button"
+              onClick={() => setDurationHours(2)}
+              className="btn btn-sm btn-secondary"
+              style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}
+            >
+              2 hrs
+            </button>
+            <button
+              type="button"
+              onClick={() => setDurationHours(4)}
+              className="btn btn-sm btn-secondary"
+              style={{ fontSize: "0.75rem", padding: "0.25rem 0.6rem" }}
+            >
+              4 hrs
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit}>
           {/* Time Picker Inputs */}
           <div className="form-group">
             <label className="form-label" htmlFor="startTime">
               <span>Start Time</span>
-              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>When will you arrive?</span>
+              <button
+                type="button"
+                onClick={setTimeToNow}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--primary-500)",
+                  fontSize: "0.75rem",
+                  cursor: "pointer",
+                  fontWeight: 600
+                }}
+              >
+                Use Current Time
+              </button>
             </label>
             <div className="input-icon-wrapper">
               <Clock className="input-icon-left" size={18} />
