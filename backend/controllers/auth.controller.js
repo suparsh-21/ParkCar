@@ -259,5 +259,81 @@ async function forgotPasswordController(req, res) {
         });
     }
 }
+async function resetPasswordController(req, res) {
+    try {
+        const { token, password } = req.body;
 
-module.exports={registerController,loginController,logoutController,forgotPasswordController}
+        if (!token || !password) {
+            return res.status(400).json({
+                message: "Token and new password are required"
+            });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({
+                message: "Password must be at least 6 characters long"
+            });
+        }
+
+        // Hash the token received from the reset link
+        const tokenHash = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex");
+
+        // Find valid reset token
+        const tokenResult = await pool.query(
+            `SELECT *
+             FROM password_reset_tokens
+             WHERE token_hash=$1
+             AND expires_at>CURRENT_TIMESTAMP`,
+            [tokenHash]
+        );
+
+        if (tokenResult.rows.length === 0) {
+            return res.status(400).json({
+                message: "Invalid or expired password reset link"
+            });
+        }
+
+        const resetToken = tokenResult.rows[0];
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Update user's password
+        await pool.query(
+            `UPDATE users
+             SET password=$1
+             WHERE id=$2`,
+            [
+                hashedPassword,
+                resetToken.user_id
+            ]
+        );
+
+        // Delete the reset token so it cannot be used again
+        await pool.query(
+            `DELETE FROM password_reset_tokens
+             WHERE id=$1`,
+            [resetToken.id]
+        );
+
+        return res.status(200).json({
+            message: "Password reset successfully"
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Reset Password Error!",
+            error.message
+        );
+
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+}
+
+module.exports={registerController,loginController,logoutController,forgotPasswordController,resetPasswordController}
