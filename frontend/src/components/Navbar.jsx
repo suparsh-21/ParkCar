@@ -25,7 +25,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     await logout()
     success("Logged out successfully")
-    navigate("/login")
+    navigate("/")
   }
 
   const isActive = (path) => location.pathname === path
@@ -53,7 +53,7 @@ export default function Navbar() {
       }}>
         {/* Brand Logo */}
         <Link 
-          to={user ? (isOwner ? "/owner" : "/driver") : "/"} 
+          to="/" 
           style={{
             display: "flex",
             alignItems: "center",
@@ -106,6 +106,20 @@ export default function Navbar() {
           alignItems: "center",
           gap: "1.5rem"
         }} className="desktop-nav">
+          <Link 
+            to="/" 
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              color: isActive("/") ? "var(--primary-500)" : "var(--text-secondary)",
+              fontWeight: 500,
+              fontSize: "0.95rem"
+            }}
+          >
+            <span>Home</span>
+          </Link>
+
           {!user && (
             <>
               <Link 

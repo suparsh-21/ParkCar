@@ -13,6 +13,7 @@ import {
   Loader2,
   CheckCircle2
 } from "lucide-react"
+import { formatDisplayDateTime } from "../utils/dateUtils"
 
 export default function BookingCard({
   booking,
@@ -65,11 +66,7 @@ export default function BookingCard({
   }
 
   const formatDateTime = (dt) => {
-    if (!dt) return ""
-    return new Date(dt).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short"
-    })
+    return formatDisplayDateTime(dt)
   }
 
   const isConfirmed = booking.status === "CONFIRMED"

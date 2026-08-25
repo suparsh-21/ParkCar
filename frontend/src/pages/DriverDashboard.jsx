@@ -10,15 +10,16 @@ import EmptyState from "../components/EmptyState"
 import { 
   Car, 
   MapPin, 
+  Clock, 
   Calendar, 
   Navigation, 
-  Clock, 
   ArrowRight, 
-  Search, 
   ShieldCheck, 
-  Sparkles,
+  CreditCard,
+  Search,
   CheckCircle2
 } from "lucide-react"
+import { formatDisplayTime } from "../utils/dateUtils"
 
 export default function DriverDashboard() {
   const { user } = useAuth()
@@ -117,7 +118,7 @@ export default function DriverDashboard() {
                   <span>{activeBooking.address}</span>
                 </p>
                 <div style={{ marginTop: "0.75rem", fontSize: "0.85rem", color: "var(--text-muted)" }}>
-                  Valid until: <strong style={{ color: "var(--text-primary)" }}>{new Date(activeBooking.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
+                  Valid until: <strong style={{ color: "var(--text-primary)" }}>{formatDisplayTime(activeBooking.end_time)}</strong>
                 </div>
               </div>
 

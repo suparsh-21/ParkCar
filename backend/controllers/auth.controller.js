@@ -3,6 +3,8 @@ const pool = require("../config/db");
 const generateToken = require("../utils/generateToken");
 const crypto = require("crypto");
 const sendEmail=require("../utils/sendEmail")
+const getWelcomeEmail=require("../utils/welcomeEmail")
+
 
 
 async function registerController(req,res){
@@ -23,7 +25,24 @@ async function registerController(req,res){
         `INSERT INTO users(name,email,password,role)
          VALUES($1,$2,$3,$4) RETURNING id,name,email,role ,created_at`,[name,email,hashedPassword,role || "DRIVER"]
     )
-    return res.status(201).json({message:"User registered successfully",user:result.rows[0]})
+const newUser = result.rows[0];
+
+try {
+    const welcomeEmailHTML = getWelcomeEmail(newUser);
+
+    await sendEmail(
+        newUser.email,
+        "Welcome to ParkKar — Find. Park. Go. 🚗",
+        welcomeEmailHTML
+    );
+
+} catch (emailError) {
+    console.error(
+        "Welcome Email Error!",
+        emailError.message
+    );
+}
+    return res.status(201).json({message:"User registered successfully",user:newUser})
 }
 catch(error){
     console.error("Registration Error !",error.message)

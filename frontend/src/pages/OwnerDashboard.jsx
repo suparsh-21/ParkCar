@@ -11,7 +11,7 @@ import {
   CheckCircle2, 
   MapPin, 
   Layers, 
-  DollarSign, 
+  IndianRupee, 
   ArrowRight, 
   ToggleLeft, 
   ToggleRight, 
@@ -197,7 +197,7 @@ export default function OwnerDashboard() {
                 alignItems: "center",
                 justifyContent: "center"
               }}>
-                <DollarSign size={18} />
+                <IndianRupee size={18} />
               </div>
             </div>
             <div style={{ fontSize: "2rem", fontWeight: 800, color: "#38bdf8" }}>

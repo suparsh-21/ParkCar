@@ -19,24 +19,18 @@ import {
   List, 
   SlidersHorizontal 
 } from "lucide-react"
+import { formatLocalInputDate, formatLocalBackendDate } from "../utils/dateUtils"
 
 export default function FindParking() {
   const { error: toastError } = useToast()
 
-  // Format local ISO datetime for input
-  const formatLocalISO = (date) => {
-    const offset = date.getTimezoneOffset() * 60000
-    const localISOTime = new Date(date.getTime() - offset).toISOString().slice(0, 16)
-    return localISOTime
-  }
-
   const now = new Date()
-  const defaultStart = new Date(now.getTime() + 10 * 60 * 1000)
+  const defaultStart = new Date(now.getTime() + 2 * 60 * 1000)
   const defaultEnd = new Date(defaultStart.getTime() + 2 * 60 * 60 * 1000)
 
   // State
-  const [startTime, setStartTime] = useState(formatLocalISO(defaultStart))
-  const [endTime, setEndTime] = useState(formatLocalISO(defaultEnd))
+  const [startTime, setStartTime] = useState(formatLocalInputDate(defaultStart))
+  const [endTime, setEndTime] = useState(formatLocalInputDate(defaultEnd))
   const [userLocation, setUserLocation] = useState(null)
   const [locating, setLocating] = useState(false)
   const [locationStatus, setLocationStatus] = useState("detecting")
@@ -105,8 +99,8 @@ export default function FindParking() {
       const params = {
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
-        start_time: start.toISOString(),
-        end_time: end.toISOString()
+        start_time: formatLocalBackendDate(start),
+        end_time: formatLocalBackendDate(end)
       }
 
       const data = await getNearbyParking(params)
@@ -205,8 +199,8 @@ export default function FindParking() {
                   const n = new Date()
                   const s = new Date(n.getTime() + 2 * 60 * 1000)
                   const e = new Date(s.getTime() + 2 * 60 * 60 * 1000)
-                  setStartTime(formatLocalISO(s))
-                  setEndTime(formatLocalISO(e))
+                  setStartTime(formatLocalInputDate(s))
+                  setEndTime(formatLocalInputDate(e))
                 }}
                 className="btn btn-sm btn-secondary"
                 title="Reset time window to current time"

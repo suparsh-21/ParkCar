@@ -6,7 +6,7 @@ import { useToast } from "../context/ToastContext"
 import { 
   Building2, 
   MapPin, 
-  DollarSign, 
+  IndianRupee, 
   Layers, 
   ArrowLeft, 
   Loader2, 
@@ -243,7 +243,7 @@ export default function CreateParking() {
               <div className="form-group">
                 <label className="form-label" htmlFor="price_per_hour">Price Per Hour (₹)</label>
                 <div className="input-icon-wrapper">
-                  <DollarSign className="input-icon-left" size={18} />
+                  <IndianRupee className="input-icon-left" size={18} />
                   <input
                     id="price_per_hour"
                     type="number"

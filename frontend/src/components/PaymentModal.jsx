@@ -15,6 +15,7 @@ import {
   AlertCircle,
   ArrowRight
 } from "lucide-react"
+import { formatDisplayDateTime } from "../utils/dateUtils"
 
 export default function PaymentModal({
   booking,
@@ -120,11 +121,7 @@ export default function PaymentModal({
 
   // Format date time
   const formatDateTime = (dt) => {
-    if (!dt) return ""
-    return new Date(dt).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short"
-    })
+    return formatDisplayDateTime(dt)
   }
 
   return (

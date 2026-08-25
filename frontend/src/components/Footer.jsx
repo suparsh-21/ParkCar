@@ -1,6 +1,6 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { Car, ShieldCheck, Zap, Compass, Heart } from "lucide-react"
+import { Car, ShieldCheck, Zap, Compass, Mail, MapPin } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -41,7 +41,7 @@ export default function Footer() {
                 ParkKar
               </span>
             </div>
-            <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
+            <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1.25rem", lineHeight: 1.6 }}>
               Smart parking simplified. Real-time availability, instant slot reservations, seamless payments, and turn-by-turn navigation.
             </p>
             <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -51,7 +51,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* For Drivers */}
           <div>
             <h4 style={{ fontSize: "0.95rem", color: "var(--text-primary)", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               For Drivers
@@ -63,7 +63,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Owners */}
+          {/* For Owners */}
           <div>
             <h4 style={{ fontSize: "0.95rem", color: "var(--text-primary)", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               For Parking Owners
@@ -75,29 +75,39 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Trust badges */}
+          {/* Help & Contact */}
           <div>
             <h4 style={{ fontSize: "0.95rem", color: "var(--text-primary)", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Platform Highlights
+              Need Help?
             </h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <ShieldCheck size={16} color="#10b981" />
-                <span>Verified Parking Lots</span>
+            <div style={{
+              background: "var(--bg-surface-elevated)",
+              padding: "1rem",
+              borderRadius: "var(--radius-md)",
+              border: "1px solid var(--border-subtle)"
+            }}>
+              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
+                In case of any queries, feel free to contact us:
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <Zap size={16} color="#3b82f6" />
-                <span>Instant Slot Confirmation</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <Compass size={16} color="#06b6d4" />
-                <span>1-Click Navigation</span>
-              </div>
+              <a 
+                href="mailto:parkkar2026@gmail.com" 
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  color: "#38bdf8",
+                  fontWeight: 600,
+                  fontSize: "0.85rem"
+                }}
+              >
+                <Mail size={15} />
+                <span>parkkar2026@gmail.com</span>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom copyright */}
+        {/* Bottom copyright & contact banner */}
         <div style={{
           paddingTop: "2rem",
           borderTop: "1px solid var(--border-subtle)",
@@ -110,10 +120,13 @@ export default function Footer() {
           color: "var(--text-muted)"
         }}>
           <div>
-            © {new Date().getFullYear()} ParkKar. All rights reserved. "Find. Park. Go."
+            © {new Date().getFullYear()} ParkKar. "Find. Park. Go." All rights reserved.
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-            Smart Urban Mobility Platform
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            <span>Queries? Email:</span>
+            <a href="mailto:parkkar2026@gmail.com" style={{ color: "var(--primary-500)", fontWeight: 600 }}>
+              parkkar2026@gmail.com
+            </a>
           </div>
         </div>
       </div>

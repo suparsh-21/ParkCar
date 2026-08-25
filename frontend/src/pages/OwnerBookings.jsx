@@ -14,11 +14,12 @@ import {
   User, 
   Mail, 
   Clock, 
-  DollarSign, 
+  IndianRupee, 
   RefreshCw,
   CheckCircle2,
   AlertCircle
 } from "lucide-react"
+import { formatDisplayDateTime } from "../utils/dateUtils"
 
 export default function OwnerBookings() {
   const { parking_id } = useParams()
@@ -94,11 +95,7 @@ export default function OwnerBookings() {
   const totalRevenue = confirmedBookings.reduce((sum, b) => sum + Number(b.amount || 0), 0)
 
   const formatDateTime = (dt) => {
-    if (!dt) return ""
-    return new Date(dt).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short"
-    })
+    return formatDisplayDateTime(dt)
   }
 
   if (loading) {

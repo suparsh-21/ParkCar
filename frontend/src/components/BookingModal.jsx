@@ -1,7 +1,8 @@
 import React, { useState } from "react"
 import { createBooking } from "../services/bookingService"
 import { useToast } from "../context/ToastContext"
-import { X, Calendar, Clock, DollarSign, Loader2, ArrowRight, AlertCircle, Info } from "lucide-react"
+import { X, Calendar, Clock, IndianRupee, Loader2, ArrowRight, AlertCircle, Info } from "lucide-react"
+import { formatLocalInputDate, formatLocalBackendDate } from "../utils/dateUtils"
 
 export default function BookingModal({
   parking,
@@ -11,13 +12,6 @@ export default function BookingModal({
   onBookingSuccess
 }) {
   const { success, error: toastError } = useToast()
-
-  // Format local ISO string for datetime-local input
-  const formatLocalISO = (date) => {
-    const offset = date.getTimezoneOffset() * 60000
-    const localISOTime = new Date(date.getTime() - offset).toISOString().slice(0, 16)
-    return localISOTime
-  }
 
   // Calculate a fresh, valid start time (at least 2 mins ahead of now so backend never flags past-time)
   const getFreshStartTime = () => {
@@ -37,8 +31,8 @@ export default function BookingModal({
     ? new Date(initialEndTime)
     : new Date(defaultStart.getTime() + 2 * 60 * 60 * 1000)
 
-  const [startTime, setStartTime] = useState(formatLocalISO(defaultStart))
-  const [endTime, setEndTime] = useState(formatLocalISO(defaultEnd))
+  const [startTime, setStartTime] = useState(formatLocalInputDate(defaultStart))
+  const [endTime, setEndTime] = useState(formatLocalInputDate(defaultEnd))
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
 
@@ -48,17 +42,17 @@ export default function BookingModal({
   const setDurationHours = (hours) => {
     const s = new Date(startTime)
     const baseStart = isNaN(s.getTime()) || s < new Date() ? new Date(Date.now() + 2 * 60 * 1000) : s
-    setStartTime(formatLocalISO(baseStart))
+    setStartTime(formatLocalInputDate(baseStart))
     const newEnd = new Date(baseStart.getTime() + hours * 60 * 60 * 1000)
-    setEndTime(formatLocalISO(newEnd))
+    setEndTime(formatLocalInputDate(newEnd))
   }
 
   // Set Start Time to Right Now
   const setTimeToNow = () => {
     const nowPlusTwoMins = new Date(Date.now() + 2 * 60 * 1000)
     const endPlusTwoHours = new Date(nowPlusTwoMins.getTime() + 2 * 60 * 60 * 1000)
-    setStartTime(formatLocalISO(nowPlusTwoMins))
-    setEndTime(formatLocalISO(endPlusTwoHours))
+    setStartTime(formatLocalInputDate(nowPlusTwoMins))
+    setEndTime(formatLocalInputDate(endPlusTwoHours))
   }
 
   // Calculate duration & price
@@ -93,8 +87,8 @@ export default function BookingModal({
     try {
       const payload = {
         parking_lot_id: parking.id,
-        start_time: validStart.toISOString(),
-        end_time: end.toISOString()
+        start_time: formatLocalBackendDate(validStart),
+        end_time: formatLocalBackendDate(end)
       }
 
       const data = await createBooking(payload)
