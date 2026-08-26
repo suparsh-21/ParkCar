@@ -11,7 +11,9 @@ import {
   CreditCard, 
   AlertTriangle,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  FileText,
+  X
 } from "lucide-react"
 import { formatDisplayDateTime } from "../utils/dateUtils"
 
@@ -23,6 +25,7 @@ export default function BookingCard({
   const { success, error: toastError } = useToast()
   const [cancelling, setCancelling] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [timeLeft, setTimeLeft] = useState(null)
 
   if (!booking) return null
@@ -71,6 +74,7 @@ export default function BookingCard({
 
   const isConfirmed = booking.status === "CONFIRMED"
   const isPending = booking.status === "PENDING"
+  const isCompleted = booking.status === "COMPLETED"
   const isExpired = booking.status === "EXPIRED"
   const isCancelled = booking.status === "CANCELLED"
   const isCancellable = isConfirmed && new Date(booking.end_time) > new Date()
@@ -82,7 +86,11 @@ export default function BookingCard({
         display: "flex",
         flexDirection: "column",
         gap: "1rem",
-        border: isConfirmed ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid var(--border-subtle)",
+        border: isConfirmed
+          ? "1px solid rgba(16, 185, 129, 0.3)"
+          : isCompleted
+          ? "1px solid rgba(59, 130, 246, 0.3)"
+          : "1px solid var(--border-subtle)",
         position: "relative"
       }}>
         {/* Header: Parking name + Status Badge */}
@@ -108,6 +116,8 @@ export default function BookingCard({
                   ? "badge-success"
                   : isPending
                   ? "badge-warning"
+                  : isCompleted
+                  ? "badge-primary"
                   : isCancelled
                   ? "badge-neutral"
                   : "badge-danger"
@@ -148,7 +158,9 @@ export default function BookingCard({
           </div>
 
           <div>
-            <div style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>Amount</div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
+              {isCompleted ? "Amount Paid" : "Amount"}
+            </div>
             <strong style={{ color: "#38bdf8", fontSize: "1rem" }}>₹{Number(booking.amount)}</strong>
           </div>
         </div>
@@ -199,6 +211,18 @@ export default function BookingCard({
             >
               <Navigation size={14} />
               <span>Get Directions</span>
+            </button>
+          )}
+
+          {isCompleted && (
+            <button
+              type="button"
+              onClick={() => setShowDetailsModal(true)}
+              className="btn btn-sm btn-outline"
+              style={{ gap: "0.4rem" }}
+            >
+              <FileText size={14} />
+              <span>View Details</span>
             </button>
           )}
 
@@ -271,6 +295,150 @@ export default function BookingCard({
               >
                 {cancelling ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}
                 <span>Confirm Cancel</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking Details Modal */}
+      {showDetailsModal && (
+        <div className="modal-backdrop" onClick={() => setShowDetailsModal(false)}>
+          <div
+            className="modal-content card-glass"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "480px", textAlign: "left" }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+                  <span className={`badge ${
+                    isConfirmed
+                      ? "badge-success"
+                      : isPending
+                      ? "badge-warning"
+                      : isCompleted
+                      ? "badge-primary"
+                      : isCancelled
+                      ? "badge-neutral"
+                      : "badge-danger"
+                  }`}>
+                    {booking.status}
+                  </span>
+                  <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                    #{booking.id}
+                  </span>
+                </div>
+                <h3 style={{ fontSize: "1.3rem", color: "var(--text-primary)" }}>
+                  {booking.parking_name || `Parking Lot #${booking.parking_lot_id}`}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDetailsModal(false)}
+                className="btn btn-sm btn-outline"
+                style={{ padding: "0.35rem", borderRadius: "50%" }}
+                aria-label="Close modal"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {booking.address && (
+              <div style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "0.5rem",
+                padding: "0.75rem",
+                background: "var(--bg-surface-elevated)",
+                borderRadius: "var(--radius-md)",
+                marginBottom: "1rem",
+                fontSize: "0.875rem",
+                color: "var(--text-secondary)"
+              }}>
+                <MapPin size={16} color="var(--primary-500)" style={{ flexShrink: 0, marginTop: "0.15rem" }} />
+                <span>{booking.address}</span>
+              </div>
+            )}
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.75rem",
+              marginBottom: "1rem"
+            }}>
+              <div style={{
+                background: "var(--bg-surface-elevated)",
+                padding: "0.85rem",
+                borderRadius: "var(--radius-md)"
+              }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.25rem" }}>
+                  <Clock size={12} />
+                  <span>Start Time</span>
+                </div>
+                <strong style={{ color: "var(--text-primary)", fontSize: "0.85rem" }}>
+                  {formatDateTime(booking.start_time)}
+                </strong>
+              </div>
+
+              <div style={{
+                background: "var(--bg-surface-elevated)",
+                padding: "0.85rem",
+                borderRadius: "var(--radius-md)"
+              }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.3rem", marginBottom: "0.25rem" }}>
+                  <Clock size={12} />
+                  <span>End Time</span>
+                </div>
+                <strong style={{ color: "var(--text-primary)", fontSize: "0.85rem" }}>
+                  {formatDateTime(booking.end_time)}
+                </strong>
+              </div>
+            </div>
+
+            <div style={{
+              background: "var(--bg-surface-elevated)",
+              padding: "1rem",
+              borderRadius: "var(--radius-md)",
+              marginBottom: "1.25rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div>
+                <div style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
+                  {isCompleted ? "Total Amount Paid" : "Total Amount"}
+                </div>
+                <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "#38bdf8" }}>
+                  ₹{Number(booking.amount)}
+                </div>
+              </div>
+              {isCompleted && (
+                <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", color: "#34d399", fontSize: "0.85rem", fontWeight: 600 }}>
+                  <CheckCircle2 size={16} />
+                  <span>Completed</span>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+              {booking.address && (
+                <button
+                  type="button"
+                  onClick={() => openGoogleMapsDirections(null, null, null, null, booking.address)}
+                  className="btn btn-outline btn-sm"
+                  style={{ gap: "0.4rem" }}
+                >
+                  <Navigation size={14} />
+                  <span>Get Directions</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowDetailsModal(false)}
+                className="btn btn-primary btn-sm"
+              >
+                Close
               </button>
             </div>
           </div>

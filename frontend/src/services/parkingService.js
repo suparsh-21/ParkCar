@@ -49,3 +49,11 @@ export async function toggleParking(parkingId) {
   const response = await api.patch(`/parking/${parkingId}/toggle`)
   return response.data
 }
+
+/**
+ * Delete a parking lot by ID.
+ */
+export async function deleteParking(parkingId) {
+  const response = await api.delete(`/parking/${parkingId}`)
+  return response.data
+}

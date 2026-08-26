@@ -1,6 +1,8 @@
 const pool = require('../config/db')
 const razorpay = require('../utils/razorpay')
 const crypto = require('crypto')
+const sendEmail=require("../utils/sendEmail")
+const getBookingConfirmationEmail=require("../utils/bookingConfirmationEmail")
 
 
 async function createPaymentController(req,res){
@@ -206,6 +208,30 @@ async function paymentSuccessController(req,res){
         }
 
         const booking=bookingResult.rows[0]
+const bookingDetailsResult = await client.query(
+    `SELECT
+        u.name AS user_name,
+        u.email AS user_email,
+        p.name AS parking_name,
+        p.address AS parking_address
+     FROM bookings b
+     JOIN users u
+        ON u.id = b.user_id
+     JOIN parking_lots p
+        ON p.id = b.parking_lot_id
+     WHERE b.id = $1`,
+    [booking.id]
+);
+
+if (bookingDetailsResult.rows.length === 0) {
+    await client.query("ROLLBACK");
+
+    return res.status(404).json({
+        message: "Booking details not found"
+    });
+}
+
+const bookingDetails = bookingDetailsResult.rows[0];
 
 
         // 4. Check booking owner
@@ -350,10 +376,37 @@ async function paymentSuccessController(req,res){
              RETURNING *`,
             [payment.booking_id]
         )
-
+    const confirmationEmailData = {
+    user_name: bookingDetails.user_name,
+    user_email: bookingDetails.user_email,
+    parking_name: bookingDetails.parking_name,
+    parking_address: bookingDetails.parking_address,
+    start_time: updatedBooking.rows[0].start_time,
+    end_time: updatedBooking.rows[0].end_time,
+    amount: updatedPayment.rows[0].amount,
+    booking_id: updatedBooking.rows[0].id
+};
 
         // 13. Everything succeeded
         await client.query("COMMIT")
+    try {
+    const emailHTML =
+        getBookingConfirmationEmail(confirmationEmailData);
+
+    await sendEmail(
+        bookingDetails.user_email,
+        "🎉 ParkKar Booking Confirmed",
+        emailHTML
+    );
+
+} catch (emailError) {
+
+    console.error(
+        "Booking Confirmation Email Error!",
+        emailError.message
+    );
+
+}
 
 
         return res.status(200).json({

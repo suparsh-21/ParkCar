@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { getMyParkings, toggleParking } from "../services/parkingService"
+import { getMyParkings, toggleParking, deleteParking } from "../services/parkingService"
 import { useToast } from "../context/ToastContext"
 import LoadingSpinner from "../components/LoadingSpinner"
 import EmptyState from "../components/EmptyState"
@@ -16,7 +16,10 @@ import {
   Navigation,
   CheckCircle2,
   XCircle,
-  Clock
+  Clock,
+  Trash2,
+  AlertTriangle,
+  Loader2
 } from "lucide-react"
 
 export default function OwnerParkings() {
@@ -26,6 +29,8 @@ export default function OwnerParkings() {
   const [parkings, setParkings] = useState([])
   const [loading, setLoading] = useState(true)
   const [togglingId, setTogglingId] = useState(null)
+  const [lotToDelete, setLotToDelete] = useState(null)
+  const [deleting, setDeleting] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
   const fetchParkings = async () => {
@@ -55,6 +60,22 @@ export default function OwnerParkings() {
       toastError(msg)
     } finally {
       setTogglingId(null)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!lotToDelete || deleting) return
+    setDeleting(true)
+    try {
+      const data = await deleteParking(lotToDelete.id)
+      success(data?.message || "Parking lot deleted successfully.")
+      setParkings((prev) => prev.filter((p) => p.id !== lotToDelete.id))
+      setLotToDelete(null)
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to delete parking lot."
+      toastError(msg)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -242,7 +263,8 @@ export default function OwnerParkings() {
                   justifyContent: "space-between",
                   gap: "0.5rem",
                   paddingTop: "0.75rem",
-                  borderTop: "1px solid var(--border-subtle)"
+                  borderTop: "1px solid var(--border-subtle)",
+                  flexWrap: "wrap"
                 }}>
                   <button
                     onClick={() => handleToggle(lot.id)}
@@ -253,11 +275,11 @@ export default function OwnerParkings() {
                     {togglingId === lot.id ? "Updating..." : lot.is_open ? "Close Lot" : "Open Lot"}
                   </button>
 
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
                     <Link
                       to={`/owner/parkings/${lot.id}/edit`}
                       className="btn btn-sm btn-secondary"
-                      style={{ padding: "0.45rem 0.85rem", fontSize: "0.825rem", gap: "0.3rem" }}
+                      style={{ padding: "0.45rem 0.75rem", fontSize: "0.825rem", gap: "0.3rem" }}
                     >
                       <Edit3 size={14} />
                       <span>Edit</span>
@@ -266,11 +288,22 @@ export default function OwnerParkings() {
                     <Link
                       to={`/owner/parkings/${lot.id}/bookings`}
                       className="btn btn-sm btn-primary"
-                      style={{ padding: "0.45rem 0.85rem", fontSize: "0.825rem", gap: "0.3rem" }}
+                      style={{ padding: "0.45rem 0.75rem", fontSize: "0.825rem", gap: "0.3rem" }}
                     >
                       <Calendar size={14} />
                       <span>Bookings</span>
                     </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => setLotToDelete(lot)}
+                      className="btn btn-sm btn-danger"
+                      style={{ padding: "0.45rem 0.75rem", fontSize: "0.825rem", gap: "0.3rem" }}
+                      title="Delete Parking Lot"
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -278,6 +311,85 @@ export default function OwnerParkings() {
           </div>
         )}
       </div>
+
+      {/* Delete Parking Lot Confirmation Modal */}
+      {lotToDelete && (
+        <div className="modal-backdrop" onClick={() => !deleting && setLotToDelete(null)}>
+          <div
+            className="modal-content card-glass"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "440px", textAlign: "center" }}
+          >
+            <div style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "50%",
+              background: "var(--danger-bg)",
+              border: "1px solid var(--danger-border)",
+              color: "var(--danger)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 1rem"
+            }}>
+              <AlertTriangle size={28} />
+            </div>
+
+            <h3 style={{ fontSize: "1.3rem", marginBottom: "0.5rem", color: "var(--text-primary)" }}>
+              Delete Parking Lot?
+            </h3>
+            <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
+              Are you sure you want to delete
+            </p>
+            <div style={{
+              fontSize: "1.05rem",
+              fontWeight: 700,
+              color: "#ffffff",
+              marginBottom: "0.75rem",
+              background: "var(--bg-surface-elevated)",
+              padding: "0.6rem 0.85rem",
+              borderRadius: "var(--radius-md)",
+              wordBreak: "break-word"
+            }}>
+              "{lotToDelete.name}"
+            </div>
+            <p style={{ fontSize: "0.85rem", color: "#f87171", marginBottom: "1.5rem" }}>
+              This action cannot be undone.
+            </p>
+
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <button
+                type="button"
+                onClick={() => setLotToDelete(null)}
+                className="btn btn-secondary"
+                style={{ flex: 1 }}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="btn btn-danger"
+                style={{ flex: 1, gap: "0.4rem" }}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={16} />
+                    <span>Delete Parking</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -20,7 +20,7 @@ export default function MyBookings() {
   const navigate = useNavigate()
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState("ALL") // "ALL" | "CONFIRMED" | "PENDING" | "EXPIRED" | "CANCELLED"
+  const [activeTab, setActiveTab] = useState("ALL") // "ALL" | "CONFIRMED" | "PENDING" | "COMPLETED" | "CANCELLED" | "EXPIRED"
   const [searchQuery, setSearchQuery] = useState("")
 
   // Payment Modal state
@@ -56,6 +56,15 @@ export default function MyBookings() {
     if (status === "ALL") return bookings.length
     return bookings.filter((b) => b.status === status).length
   }
+
+  const TABS = [
+    { id: "ALL", label: "All Bookings" },
+    { id: "CONFIRMED", label: "Confirmed" },
+    { id: "PENDING", label: "Pending Payment" },
+    { id: "COMPLETED", label: "Completed" },
+    { id: "CANCELLED", label: "Cancelled" },
+    { id: "EXPIRED", label: "Expired" }
+  ]
 
   return (
     <div style={{ paddingTop: "calc(var(--navbar-height) + 1.5rem)", paddingBottom: "4rem" }}>
@@ -104,13 +113,7 @@ export default function MyBookings() {
             flexWrap: "wrap",
             gap: "0.5rem"
           }}>
-            {[
-              { id: "ALL", label: "All Bookings" },
-              { id: "CONFIRMED", label: "Confirmed" },
-              { id: "PENDING", label: "Pending Payment" },
-              { id: "CANCELLED", label: "Cancelled" },
-              { id: "EXPIRED", label: "Expired" }
-            ].map((tab) => {
+            {TABS.map((tab) => {
               const count = getTabCount(tab.id)
               const isActive = activeTab === tab.id
               return (
