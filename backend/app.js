@@ -1,4 +1,6 @@
 const express=require("express")
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger/swagger");
 const cookieParser=require("cookie-parser")
 const authRoutes=require("./routes/auth.routes")
 const parkingRoutes=require("./routes/parking.route")
@@ -7,6 +9,11 @@ const paymentRoutes=require('./routes/payment.route')
 const app=express()
 app.use(express.json())
 app.use(cookieParser())
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+);
 
 app.use("/api/auth",authRoutes)
 app.use("/api/parking",parkingRoutes)

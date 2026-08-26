@@ -123,9 +123,15 @@ export default function DriverDashboard() {
               </div>
 
               <div style={{ display: "flex", gap: "0.75rem" }}>
-                {activeBooking.address && (
+                {(activeBooking.address || activeBooking.parking_name) && (
                   <button
-                    onClick={() => openGoogleMapsDirections(null, null, null, null, activeBooking.address)}
+                    onClick={() => openGoogleMapsDirections(
+                      activeBooking.latitude,
+                      activeBooking.longitude,
+                      null,
+                      null,
+                      [activeBooking.parking_name, activeBooking.address].filter(Boolean).join(", ")
+                    )}
                     className="btn btn-success btn-lg"
                     style={{ gap: "0.5rem" }}
                   >

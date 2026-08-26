@@ -202,10 +202,16 @@ export default function BookingCard({
           paddingTop: "0.5rem",
           borderTop: "1px solid var(--border-subtle)"
         }}>
-          {isConfirmed && booking.address && (
+          {isConfirmed && (booking.address || booking.parking_name) && (
             <button
               type="button"
-              onClick={() => openGoogleMapsDirections(null, null, null, null, booking.address)}
+              onClick={() => openGoogleMapsDirections(
+                booking.latitude,
+                booking.longitude,
+                null,
+                null,
+                [booking.parking_name, booking.address].filter(Boolean).join(", ")
+              )}
               className="btn btn-sm btn-success"
               style={{ gap: "0.4rem" }}
             >
@@ -422,10 +428,16 @@ export default function BookingCard({
             </div>
 
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
-              {booking.address && (
+              {(booking.address || booking.parking_name) && (
                 <button
                   type="button"
-                  onClick={() => openGoogleMapsDirections(null, null, null, null, booking.address)}
+                  onClick={() => openGoogleMapsDirections(
+                    booking.latitude,
+                    booking.longitude,
+                    null,
+                    null,
+                    [booking.parking_name, booking.address].filter(Boolean).join(", ")
+                  )}
                   className="btn btn-outline btn-sm"
                   style={{ gap: "0.4rem" }}
                 >

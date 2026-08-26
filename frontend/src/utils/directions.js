@@ -1,16 +1,26 @@
 /**
  * Open Google Maps Navigation/Directions in a new tab.
- * Uses origin coordinates when available, otherwise destination coordinates.
+ * Uses coordinates if available, or falls back to address/place name.
  */
 export function openGoogleMapsDirections(destLat, destLng, originLat, originLng, title = "Parking Location") {
-  if (!destLat || !destLng) {
-    console.error("Destination coordinates missing for directions")
+  let destination = ""
+
+  if (destLat && destLng && !isNaN(Number(destLat)) && !isNaN(Number(destLng))) {
+    destination = `${destLat},${destLng}`
+  } else if (title && typeof title === "string" && title.trim()) {
+    destination = encodeURIComponent(title.trim())
+  } else if (destLat && typeof destLat === "string" && isNaN(Number(destLat))) {
+    destination = encodeURIComponent(destLat.trim())
+  }
+
+  if (!destination) {
+    console.error("Neither coordinates nor destination address provided for directions")
     return
   }
 
-  let url = `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}`
+  let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`
 
-  if (originLat && originLng) {
+  if (originLat && originLng && !isNaN(Number(originLat)) && !isNaN(Number(originLng))) {
     url += `&origin=${originLat},${originLng}`
   }
 
